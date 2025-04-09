@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <iomanip> // 用於 std::fixed 和 std::setprecision
+#include <algorithm> // 用於 std::sort 和 std::find_if
 
 const int MAX_TERMS = 100;
 
@@ -9,7 +10,8 @@ struct PolynomialTerm {
     int expon;
 };
 
-std::vector<PolynomialTerm> terms; // 使用 vector 來存儲多項式項
+// 儲存多項式項的向量
+std::vector<PolynomialTerm> terms;
 
 // Function to insert a term into the result polynomial
 void attach(float coef, int expon) {
@@ -18,34 +20,35 @@ void attach(float coef, int expon) {
     }
 }
 
-// Function to subtract two polynomials
-void subtract_polynomials(int startA, int finishA, int startB, int finishB) {
-    int indexA = startA, indexB = startB;
-    while (indexA <= finishA && indexB <= finishB) {
-        if (terms[indexA].expon > terms[indexB].expon) {
-            attach(terms[indexA].coef, terms[indexA].expon);
-            indexA++;
-        } else if (terms[indexA].expon < terms[indexB].expon) {
-            attach(-terms[indexB].coef, terms[indexB].expon);
-            indexB++;
-        } else {  // Same exponent, subtract coefficients
-            float diff = terms[indexA].coef - terms[indexB].coef;
-            attach(diff, terms[indexA].expon);
-            indexA++;
-            indexB++;
+// Function to multiply two polynomials
+void multiply_polynomials(int startA, int finishA, int startB, int finishB) {
+    std::vector<PolynomialTerm> temp;
+
+    for (int i = startA; i <= finishA; i++) {
+        for (int j = startB; j <= finishB; j++) {
+            float new_coef = terms[i].coef * terms[j].coef;
+            int new_expon = terms[i].expon + terms[j].expon;
+
+            // Check if the exponent already exists in temp
+            auto it = std::find_if(temp.begin(), temp.end(),
+                [new_expon](const PolynomialTerm& term) { return term.expon == new_expon; });
+
+            if (it != temp.end()) {
+                it->coef += new_coef; // Update coefficient if exponent exists
+            } else {
+                temp.push_back({new_coef, new_expon}); // Add new term
+            }
         }
     }
 
-    // Append remaining terms from A
-    while (indexA <= finishA) {
-        attach(terms[indexA].coef, terms[indexA].expon);
-        indexA++;
-    }
+    // Sort temp in descending order of exponent
+    std::sort(temp.begin(), temp.end(), [](const PolynomialTerm& a, const PolynomialTerm& b) {
+        return a.expon > b.expon; // Descending order
+    });
 
-    // Append remaining terms from B (negated)
-    while (indexB <= finishB) {
-        attach(-terms[indexB].coef, terms[indexB].expon);
-        indexB++;
+    // Copy temp to terms
+    for (const auto& term : temp) {
+        attach(term.coef, term.expon);
     }
 }
 
@@ -71,7 +74,7 @@ int main() {
     int finishB = terms.size() - 1;
 
     int result_start = terms.size(); // 記錄結果的起始位置
-    subtract_polynomials(startA, finishA, startB, finishB);
+    multiply_polynomials(startA, finishA, startB, finishB);
     int result_end = terms.size() - 1; // 記錄結果的結束位置
 
     // Output result
