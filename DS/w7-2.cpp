@@ -17,7 +17,7 @@ vector<Node>segT;
 void build(int node, int l, int r){
     if(l==r){
         segT[node].sum=zone[l];
-        segT[node].maxval=zone[r];
+        segT[node].maxval=zone[l];
         return;
     }
     int mid=(l+r)/2;
@@ -32,7 +32,7 @@ void build(int node, int l, int r){
 void update(int node, int l, int r, int index, ll value){
     if(l==r){
         segT[node].sum=value;
-        segT[node].maxval;
+        segT[node].maxval=value;
         return;
     }
     int mid=(l+r)/2;
@@ -46,7 +46,7 @@ void update(int node, int l, int r, int index, ll value){
 }
 
 Node query(int node, int l, int r, int ql, int qr){
-    if((ql>r)||(qr<1)){
+    if((ql>r)||(qr<l)){
         return{0,0};
     }
     if((ql<=l)&&(r<=qr)){
