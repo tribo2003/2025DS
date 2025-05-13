@@ -59,17 +59,19 @@ void merge(Node*& l1, Node*& l2){
     current->next=l2;
 }
 
+void free(){
+    for(Node* relation:num_relation){
+        Node* current=relation;
+        while(current!=nullptr){
+            Node* temp=current;
+            current=current->next;
+            delete temp;
+        }
+    }
+}
 
-
-int main(){
-    int n, m;
-    cin>>n>>m;
-
-    for(int i=0; i<m; i++){
-        int r1, r2;
-        cin>>r1>>r2;
-        
-        int aidx=-1, bidx=-1;
+void relations(int r1, int r2){
+    int aidx=-1, bidx=-1;
         for(int j=0; j<num_relation.size(); j++){
             if(search(num_relation[j], r1)){
                 aidx=j;
@@ -90,6 +92,19 @@ int main(){
             merge(num_relation[aidx], num_relation[bidx]);
             num_relation.erase(num_relation.begin()+bidx);
         }
+
+}
+
+
+
+int main(){
+    int n, m;
+    cin>>n>>m;
+
+    for(int i=0; i<m; i++){
+        int r1, r2;
+        cin>>r1>>r2;
+        relations(r1,r2);  
     }
 
     int TotalStuInGroup=0;
@@ -105,14 +120,7 @@ int main(){
 
     cout<<num_relation.size()+isolated<<endl;
 
-    for(Node* relation:num_relation){
-        Node* current=relation;
-        while(current!=nullptr){
-            Node* temp=current;
-            current=current->next;
-            delete temp;
-        }
-    }
+    free(); 
 
     return 0;
 }
