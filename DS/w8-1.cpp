@@ -12,7 +12,7 @@ Q: 找 ＃of 朋友群
 -在 加入現在的linklist
 -不在 加入新的linklist(兩人在不同linklist裡->合併linklist)
 *使用vector儲存linklist:指向各條linklist
-最後算vectort長度
+最後算vector長度
 */
 
 struct Node{
